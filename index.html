@@ -1,12 +1,56 @@
+
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>repl.it</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-  </head>
-  <body>
-    <script src="script.js"></script>
-  </body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>repl.it</title>
+        <link href="style.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+        <script>
+            // ENABLE IN RELEASE:
+            // alert("Warning: Please use Google Chrome\n(suggested version: 87.0.4280.88 or higher)\n\nFirefox and Safari incompatible\n\nOther browsers may not be supported\n\nPlease wait up to 30 sec for game to load")
+        </script>
+        <div id="parent">
+            <div id="leftFill">
+            </div>
+            <div id="mainScreen">
+                <canvas id="canvas" width="100" height="100"></canvas>
+            </div>
+            <!--
+            <div id="guiScreen">
+                <canvas id="gui" width="200" height="800"></canvas>
+            </div>
+            -->
+            <div id="rightFill">
+
+            </div>
+        </div>
+        <script type="module" src="modules/main.js"></script>
+        <script type="module" src="modules/canvasExtension.js"></script>
+        <script type="module" src="modules/input.js"></script>
+        <script type="module" src="modules/audio.js"></script>
+        <script type="module" src="modules/collisions.js"></script>
+        <script type="module" src="modules/player.js"></script>
+        <script type="module" src="modules/tileSystem.js"></script>
+        <script type="module" src="modules/graphics.js"></script>
+
+
+        <audio id="title_music" src="audio/music/title_spirit_crossing_calm.m4a" preload="auto" type="audio/m4a">
+        </audio>
+        <audio id="s1a_music" src="audio/music/s1a_change_perspectives_change_the_world.m4a" preload="auto" type="audio/m4a">
+        </audio>
+        <audio id="s1b_music" src="audio/music/s1b_reaching_beyond.m4a" preload="auto" type="audio/m4a">
+        </audio>
+        <audio id="s2a_music" src="audio/music/s2a_spectral_journey.m4a" preload="auto" type="audio/m4a">
+        </audio>
+        <audio id="s2b_music" src="audio/music/s2b_spirit_crossing.m4a" preload="auto" type="audio/m4a">
+        </audio>
+        <audio id="s3a_music" src="audio/music/s3a_crossing_sanzu_calm.m4a" preload="auto" type="audio/m4a">
+        </audio>
+        <audio id="s3b_music" src="audio/music/s3b_crossing_sanzu.m4a" preload="auto" type="audio/m4a">
+        </audio>
+    </body>
 </html>

@@ -1,0 +1,23 @@
+#parent {
+    display: flex;
+}
+#leftFill {
+    flex: 1;
+    background: black;
+}
+#mainScreen {
+    height: 100%;
+    -ms-interpolation-mode: nearest-neighbor;
+    image-rendering: optimizeSpeed;
+}
+/*
+#guiScreen {
+    height: 100%;
+}
+*/
+#rightFill {
+    flex: 1;
+    background: black;
+}
+
+html, body {margin: 0; height: 100%; overflow: hidden}
