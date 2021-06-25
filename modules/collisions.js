@@ -308,6 +308,9 @@ class HitBox extends Collision { // rectangular collision boundaries
         
         return false;
     }
+    inBounds(pos) { // tests if point is in bounds
+        return this.pos[0] <= pos[0] && pos[0] <= this.pos[0]+this.dim[0] && this.pos[1] <= pos[1] && pos[1] <= this.pos[1]+this.dim[1];
+    }
 }
 
 class HitCircle extends Collision { // circular collision boundaries
@@ -360,5 +363,8 @@ class HitCircle extends Collision { // circular collision boundaries
             withinLength = false
         }
         return (withinLength && distance <= this.radius)
+    }
+    inBounds(pos) { // tests if point is in bounds
+        return ce.distance(this.pos, pos, false) <= this.radius**2;
     }
 }

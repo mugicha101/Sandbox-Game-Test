@@ -77,6 +77,7 @@ export const inputs = {
     down: new InputHandler(['s','downarrow']),
     left: new InputHandler(['a','leftarrow']),
     right: new InputHandler(['d','rightarrow']),
+    inventory: new InputHandler(['e']),
     debug: new InputHandler(['b']),
     consoleDebug: new InputHandler(['c']),
     sprint: new InputHandler([' ', 'shift']),
@@ -86,7 +87,17 @@ export const inputs = {
     middleClick: new InputHandler(),
     rightClick: new InputHandler(),
     zoomOut: new InputHandler(['o']),
-    zoomIn: new InputHandler(['i'])
+    zoomIn: new InputHandler(['i']),
+    slot1: new InputHandler(['1']),
+    slot2: new InputHandler(['2']),
+    slot3: new InputHandler(['3']),
+    slot4: new InputHandler(['4']),
+    slot5: new InputHandler(['5']),
+    slot6: new InputHandler(['6']),
+    slot7: new InputHandler(['7']),
+    slot8: new InputHandler(['8']),
+    slot9: new InputHandler(['9']),
+    slot10: new InputHandler(['0']),
 }
 
 export function unpressAll() {

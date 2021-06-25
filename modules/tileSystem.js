@@ -4,28 +4,9 @@ const c = canvas.getContext("2d", { alpha: false })
 import {Graphic} from './graphics.js';
 import {Player} from './player.js';
 import {Collision, HitBox, HitCircle} from './collisions.js';
+import {PlayerInv} from './inventory.js';
 import {zoom, Draw, MainLoop} from './main.js';
 export {Tile, TileType, Map, BreakTracker};
-
-class TileType {
-    constructor(name, graphic, tools=[], breakTime=null, blastRes=null, hasHitbox=true) {
-        this.graphic = graphic;
-        this.name = name;
-        this.tools = tools;
-        this.breakTime = breakTime;
-        this.blastRes = blastRes;
-        this.hasHitbox = hasHitbox;
-    }
-
-    static types = {
-        grass: new TileType("grass", new Graphic("../graphics/tiles/grass", ["tile"], ".png", 0.25), ["shovel"], 0.6, 1.2, true),
-        dirt: new TileType("dirt", new Graphic("../graphics/tiles/dirt", ["tile"], ".png", 0.25), ["shovel"], 0.5, 1, true),
-        stone: new TileType("stone", new Graphic("../graphics/tiles/stone", ["tile"], ".png", 0.25), ["pick"], 5, 5, true),
-        stone_brick: new TileType("stone brick", new Graphic("../graphics/tiles/stone_brick", ["tile"], ".png", 0.25), ["pick"], 7, 7, true),
-        log: new TileType("log", new Graphic("../graphics/tiles/log", ["tile"], ".png", 0.25), ["axe"], 3, 3, false),
-        leaves: new TileType("leaves", new Graphic("../graphics/tiles/leaves", ["tile"], ".png", 0.25), ["axe"], 0.5, 0.25, true),
-    }
-}
 
 class Tile {
     static size = 64;
@@ -50,6 +31,34 @@ class Tile {
             this.pos = tile.pos;
             this.updateHitbox();
         }
+    }
+}
+
+const tileItemScale = 0.65;
+class TileType {
+    constructor(name, graphic, tools=[], breakTime=null, blastRes=null, hasHitbox=true) {
+        this.name = name;
+        this.tools = tools;
+        this.breakTime = breakTime;
+        this.blastRes = blastRes;
+        this.hasHitbox = hasHitbox;
+
+        // store graphics
+        this.graphic = graphic;
+        let g = graphic.clone();
+        g.layers = ["inventory"];
+        g.scale *= tileItemScale;
+        g.offset = [-Tile.size*0.5*tileItemScale, -Tile.size*0.5*tileItemScale];
+        this.itemGraphic = g;
+    }
+
+    static types = {
+        grass: new TileType("grass", new Graphic("../graphics/tiles/grass", ["tile"], ".png", 0.25), ["shovel"], 0.6, 1.2, true),
+        dirt: new TileType("dirt", new Graphic("../graphics/tiles/dirt", ["tile"], ".png", 0.25), ["shovel"], 0.5, 1, true),
+        stone: new TileType("stone", new Graphic("../graphics/tiles/stone", ["tile"], ".png", 0.25), ["pick"], 5, 5, true),
+        stone_brick: new TileType("stone brick", new Graphic("../graphics/tiles/stone_brick", ["tile"], ".png", 0.25), ["pick"], 7, 7, true),
+        log: new TileType("log", new Graphic("../graphics/tiles/log", ["tile"], ".png", 0.25), ["axe"], 3, 3, false),
+        leaves: new TileType("leaves", new Graphic("../graphics/tiles/leaves", ["tile"], ".png", 0.25), ["axe"], 0.5, 0.25, true),
     }
 }
 

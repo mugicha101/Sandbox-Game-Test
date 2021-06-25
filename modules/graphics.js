@@ -11,7 +11,7 @@ class Graphic { // image but can animate and assign to renderlayers and stuff
     frames = []; // list of images that the graphic cycles through
     fps = 8; // amount of frames per second (if animation)
     offset = [0, 0]; // offset of image (used during render)
-    constructor(imagePath, layers, extension = ".png", scale = 1, frameCount = 1, fps = 10, offset = [0, 0, 0], alpha = 1, frameIndex = null, behindFade=true) {
+    constructor(imagePath, layers, extension = ".png", scale = 1, frameCount = 1, fps = 10, offset = [0, 0], alpha = 1, frameIndex = null) {
         // first 2 nums of offset are x and y offset
         // 3rd num is the distance from bottom of image to y boundary of the object (center of object's y offset), helps with renderorder
         while (offset.length < 3) {
@@ -29,7 +29,6 @@ class Graphic { // image but can animate and assign to renderlayers and stuff
         this.scale = scale;
         this.alpha = alpha;
         this.hidden = false;
-        this.behindFade = behindFade
         this.frameIndex = frameIndex;
         if (frameCount <= 1) {
             // use imagePath as path to image (without extension, auto-adds path to graphics folder)
@@ -70,8 +69,9 @@ class Graphic { // image but can animate and assign to renderlayers and stuff
         return this.frames[frame];
     }
 
-    getDim() { // gets image dimensions
-        return [this.frames[0].width, this.frames[0].height]
+    getDim(scaledDim=true) { // gets image dimensions
+        let multi = scaledDim? this.scale : 1;
+        return [this.frames[0].width*multi, this.frames[0].height*multi];
     }
 
     clone() { // returns a deepcopy of the object

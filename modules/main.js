@@ -5,11 +5,12 @@ import { Player } from './player.js';
 import { Map, Tile, TileType, BreakTracker } from './tileSystem.js';
 import { Sound, SpatialSound, Music } from './audio.js';
 import { WorldGen } from './worldGen.js';
+import { PlayerInv, ItemType, TileItemType } from './inventory.js';
 export { MainLoop, Draw, debug, consoleDebug, debugEnabled };
 
 const canvas = ce.canvas
-canvas.style.cursor = 'none';
 const c = canvas.getContext("2d", { alpha: false })
+canvas.style.cursor = 'none';
 const debugEnabled = true;
 let debug = false;
 let consoleDebug = false;
@@ -177,12 +178,15 @@ function getAvg(arr) {
 
 const Calculate = { // handles most of the calculation calls (runs exactly 60 times per second, if it takes longer than 1/60 of a second to run this step, the program can't keep up and will lag majorly)
     hasFocus: false,
-    inputSequence: function (delta) {
+    inputSequence: function (delta) { // input handling
+        // debug
         this.debugToggle();
         inp.moveMouse();
         if (!document.hasFocus()) {
             inp.unpressAll();
         }
+
+        // focus
         if (!this.hasFocus && document.hasFocus()) {
             console.log("focused");
         } else if (this.hasFocus && !document.hasFocus()) {
@@ -190,7 +194,17 @@ const Calculate = { // handles most of the calculation calls (runs exactly 60 ti
         }
         this.hasFocus = document.hasFocus();
 
+        // zoom
         this.zoomInput();
+
+        // inventory
+        if (inputs.inventory.initialPress)
+            PlayerInv.open = !PlayerInv.open;
+        PlayerInv.inputCalc();
+
+        // break and place
+        this.placeAndBreak();
+        
     },
     zoomInput: function() {
         if (inputs.zoomIn.pressed) changeZoom(1.01);
@@ -208,8 +222,8 @@ const Calculate = { // handles most of the calculation calls (runs exactly 60 ti
     gameSequence: function (timestep) {
         this.zoom();
         Player.move();
-        this.placeAndBreak();
         BreakTracker.calc();
+        PlayerInv.calc();
     },
     debugSequence: function () {
         if (consoleDebug && MainLoop.cycles % 60 === 0) {
@@ -253,6 +267,7 @@ const Calculate = { // handles most of the calculation calls (runs exactly 60 ti
         zoom += (zoomTarget - zoom)*0.2;
     },
     placeAndBreak: function() {
+        if (PlayerInv.open) return;
         let mouseCoords = [
             inp.mouseCoords[0]/zoom+Player.camPos[0],
             -inp.mouseCoords[1]/zoom+Player.camPos[1]
@@ -272,16 +287,21 @@ const Calculate = { // handles most of the calculation calls (runs exactly 60 ti
                 bt.advance();
         }
         
-        if (inputs.rightClick.initialPress) {
-            let targetTile = Map.getTileAt(mouseCoords, false);
-            if (targetTile != null && targetTile.type == null)
-                Map.setTileAt(mouseCoords, new Tile(TileType.types.stone_brick), false);
+        if (PlayerInv.hbIndex != null && inputs.rightClick.initialPress) {
+            let slot = PlayerInv.getActiveSlot();
+            if (slot.item != null && slot.item.type instanceof TileItemType) {
+                let targetTile = Map.getTileAt(mouseCoords, false);
+                if (targetTile != null && targetTile.type == null) {
+                    Map.setTileAt(mouseCoords, new Tile(slot.item.type.tileType), false);
+                    slot.removeOneItem();
+                }
+            }
         }
     }
 }
 
 const Draw = { // handles most rendering calls (may run less than 60 times per second depending on the lag)
-    layers: ["wall", "tile", "wiring"],
+    layers: ["wall", "tile", "wiring", "inventory"],
     layerCanvases: {},
     drawLayerCanvas(layer, alpha=1) {
         c.resetTrans();
@@ -308,6 +328,8 @@ const Draw = { // handles most rendering calls (may run less than 60 times per s
         BreakTracker.draw();
         this.drawLayerCanvas("tile");
         Player.draw();
+        PlayerInv.draw();
+        this.drawInventoryLayer();
         this.cursor();
     },
     resetCanvas: function () { // clears the canvas
@@ -342,6 +364,12 @@ const Draw = { // handles most rendering calls (may run less than 60 times per s
         c.fillCircle(0, 0, mouseSize / c.canvasScale);
         c.globalCompositeOperation = "source-over";
     },
+    drawInventoryLayer() {
+        let alpha = PlayerInv.open? 1 : 3-(MainLoop.cycles-PlayerInv.lastWheelCycle)/120;
+        if (alpha < 0.5) alpha = 0.5;
+        else if (alpha > 1) alpha = 1;
+        this.drawLayerCanvas("inventory", PlayerInv.open? 1 : alpha);
+    }
 }
 for (let i in Draw.layers) {
     let id = Draw.layers[i];
@@ -367,6 +395,7 @@ window.onload = function () {
             MainLoop.activeScene = "game";
             Player.init();
             WorldGen.genSequence();
+            PlayerInv.init();
             Player.goToSpawn();
             requestAnimationFrame(animationFrame);
         } else {
